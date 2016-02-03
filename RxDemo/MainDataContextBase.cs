@@ -1,0 +1,125 @@
+﻿namespace RxDemo
+{
+    using System;
+    using System.Collections.Immutable;
+    using System.ComponentModel;
+    using System.Reactive.Linq;
+    using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
+    using System.Windows;
+
+    using RxDemo.Annotations;
+
+    public abstract class MainDataContextBase : INotifyPropertyChanged
+    {
+        private int _number;
+
+        private int _oddNumber;
+
+        private string _ordinalNumber;
+
+        private ImmutableSortedDictionary<double, double> _graphPoints;
+
+        public IObservable<int> NumbersObservable { get; private set; }
+
+        public abstract IObservable<int> OddNumbersObservable { get; }
+
+        public abstract IObservable<string> OrdinalNumbersObservable { get; }
+
+        public abstract IObservable<ImmutableSortedDictionary<double, double>> GraphObservable {get;}
+
+        protected MainDataContextBase()
+        {
+            var connectable = Observable.Create<int>(
+                async (obs, cancellationToken) =>
+                {
+                    var rnd = new Random();
+                    int number = 0;
+                    while (true)
+                    {
+                        await Task.Delay(rnd.Next(300, 1000));
+                        number += rnd.Next(-10, 11);
+                        obs.OnNext(number);
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                    }
+
+                    obs.OnCompleted();
+                }).Publish();
+            NumbersObservable = connectable;
+            NumbersObservable.Subscribe(p => Number = p, ex => MessageBox.Show(ex.Message));
+            SubscribeToObservables();
+            connectable.Connect();
+        }
+
+        private void SubscribeToObservables()
+        {
+            OddNumbersObservable.Subscribe(p => OddNumber = p, ex => MessageBox.Show(ex.Message));
+            OrdinalNumbersObservable.Subscribe(p => OrdinalNumber = p, ex => MessageBox.Show(ex.Message));
+            GraphObservable.Subscribe(p => GraphPoints = p, ex => MessageBox.Show(ex.Message));
+        }
+
+        public int Number
+        {
+            get { return _number; }
+            set
+            {
+                _number = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int OddNumber
+        {
+            get
+            {
+                return _oddNumber;
+            }
+            set
+            {
+                _oddNumber = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string OrdinalNumber
+        {
+            get
+            {
+                return _ordinalNumber;
+            }
+            set
+            {
+                _ordinalNumber = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ImmutableSortedDictionary<double, double> GraphPoints
+        {
+            get
+            {
+                return _graphPoints;
+            }
+            set
+            {
+                _graphPoints = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+}
