@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Immutable;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Reactive.Linq;
     using System.Runtime.CompilerServices;
@@ -18,6 +19,12 @@
 
         private string _ordinalNumber;
 
+        private ObservableCollection<SubItem> _dividedByModulo = new ObservableCollection<SubItem>();
+
+        private ObservableCollection<SubItem> _dividedByModuloOnlyFirstFive = new ObservableCollection<SubItem>();
+
+        private ObservableCollection<SubItem> _dividedByDivUntilNineObservable = new ObservableCollection<SubItem>();
+
         private ImmutableSortedDictionary<double, double> _graphPoints;
 
         public IObservable<int> NumbersObservable { get; private set; }
@@ -26,7 +33,13 @@
 
         public abstract IObservable<string> OrdinalNumbersObservable { get; }
 
-        public abstract IObservable<ImmutableSortedDictionary<double, double>> GraphObservable {get;}
+        public abstract IObservable<ImmutableSortedDictionary<double, double>> GraphObservable { get; }
+
+        public abstract IObservable<IObservable<int>> DividedByModuloObservable { get; }
+
+        public abstract IObservable<IObservable<int>> DividedByModuloOnlyFirstFiveObservable { get; }
+
+        public abstract IObservable<IObservable<int>> DividedByDivUntilNineObservable { get; }
 
         protected MainDataContextBase()
         {
@@ -59,6 +72,21 @@
             OddNumbersObservable.Subscribe(p => OddNumber = p, ex => MessageBox.Show(ex.Message));
             OrdinalNumbersObservable.Subscribe(p => OrdinalNumber = p, ex => MessageBox.Show(ex.Message));
             GraphObservable.Subscribe(p => GraphPoints = p, ex => MessageBox.Show(ex.Message));
+            DividedByModuloObservable.Select(p => new SubItem(p)).Subscribe(p =>
+            {
+                p.Observable.Subscribe(q => { }, () => _dividedByModulo.Remove(p));
+                _dividedByModulo.Add(p);
+            }, ex => MessageBox.Show(ex.Message));
+            DividedByModuloOnlyFirstFiveObservable.Select(p => new SubItem(p)).Subscribe(p =>
+            {
+                p.Observable.Subscribe(q => { }, () => _dividedByModuloOnlyFirstFive.Remove(p));
+                _dividedByModuloOnlyFirstFive.Add(p);
+            }, ex => MessageBox.Show(ex.Message));
+            DividedByDivUntilNineObservable.Select(p => new SubItem(p)).Subscribe(p =>
+            {
+                p.Observable.Subscribe(q => { }, () => _dividedByDivUntilNineObservable.Remove(p));
+                _dividedByDivUntilNineObservable.Add(p);
+            }, ex => MessageBox.Show(ex.Message));
         }
 
         public int Number
@@ -108,6 +136,21 @@
                 _graphPoints = value;
                 OnPropertyChanged();
             }
+        }
+
+        public ObservableCollection<SubItem> DividedByModulo
+        {
+            get { return _dividedByModulo; }
+        }
+
+        public ObservableCollection<SubItem> DividedByModuloOnlyFirstFive
+        {
+            get { return _dividedByModuloOnlyFirstFive; }
+        }
+
+        public ObservableCollection<SubItem> DividedByDivUntilNine
+        {
+            get { return _dividedByDivUntilNineObservable; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

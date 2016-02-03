@@ -55,5 +55,29 @@
                 return NumbersObservable.Scan(ImmutableSortedDictionary<double, double>.Empty, (doubles, i) => doubles.SetItem(DateTime.Now.Ticks - new DateTime(2015, 1, 1).Ticks, i));
             }
         }
+
+        public override IObservable<IObservable<int>> DividedByModuloObservable
+        {
+            get
+            {
+                return NumbersObservable.GroupBy(p => Math.Abs(p % 10));
+            }
+        }
+
+        public override IObservable<IObservable<int>> DividedByModuloOnlyFirstFiveObservable
+        {
+            get
+            {
+                return NumbersObservable.GroupBy(p => Math.Abs(p % 10)).Select(p => p.Take(5));
+            }
+        }
+
+        public override IObservable<IObservable<int>> DividedByDivUntilNineObservable
+        {
+            get
+            {
+                return NumbersObservable.GroupByUntil(p => p / 10, p => p.Where(q => Math.Abs(q % 10) == 9));
+            }
+        }
     }
 }
