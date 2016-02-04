@@ -61,6 +61,14 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 10, 3">
+            <TextBlock Text="Raw Number: " />
+            <TextBlock FontWeight="Bold" Text="{Binding OtherNumber}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 3, 10, 3">
+            <TextBlock Text="Odd Number: " />
+            <TextBlock FontWeight="Bold" Text="{Binding OtherOddNumber}" />
+        </StackPanel>
     </StackPanel>
 </Window>
 

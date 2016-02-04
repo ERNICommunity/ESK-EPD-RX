@@ -27,6 +27,10 @@
 
         private ImmutableSortedDictionary<double, double> _graphPoints;
 
+        private int _otherNumber;
+
+        private int _otherOddNumber;
+
         public IObservable<int> NumbersObservable { get; private set; }
 
         public abstract IObservable<int> OddNumbersObservable { get; }
@@ -41,26 +45,30 @@
 
         public abstract IObservable<IObservable<int>> DividedByDivUntilNineObservable { get; }
 
-        protected MainDataContextBase()
+        public abstract IObservable<int> OtherNumbersObservable { get; }
+
+        public abstract IObservable<int> OtherOddNumbersObservable { get; }
+
+        protected void Initialize()
         {
             var connectable = Observable.Create<int>(
-                async (obs, cancellationToken) =>
-                {
-                    var rnd = new Random();
-                    int number = 0;
-                    while (true)
-                    {
-                        await Task.Delay(rnd.Next(300, 1000));
-                        number += rnd.Next(-10, 11);
-                        obs.OnNext(number);
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-                    }
+                            async (obs, cancellationToken) =>
+                            {
+                                var rnd = new Random();
+                                int number = 0;
+                                while (true)
+                                {
+                                    await Task.Delay(rnd.Next(300, 1000));
+                                    number += rnd.Next(-10, 11);
+                                    obs.OnNext(number);
+                                    if (cancellationToken.IsCancellationRequested)
+                                    {
+                                        break;
+                                    }
+                                }
 
-                    obs.OnCompleted();
-                }).Publish();
+                                obs.OnCompleted();
+                            }).Publish();
             NumbersObservable = connectable;
             NumbersObservable.Subscribe(p => Number = p, ex => MessageBox.Show(ex.Message));
             SubscribeToObservables();
@@ -87,6 +95,8 @@
                 p.Observable.Subscribe(q => { }, () => _dividedByDivUntilNineObservable.Remove(p));
                 _dividedByDivUntilNineObservable.Add(p);
             }, ex => MessageBox.Show(ex.Message));
+            OtherNumbersObservable.Subscribe(p => OtherNumber = p, ex => MessageBox.Show(ex.Message));
+            OtherOddNumbersObservable.Subscribe(p => OtherOddNumber = p, ex => MessageBox.Show(ex.Message));
         }
 
         public int Number
@@ -151,6 +161,29 @@
         public ObservableCollection<SubItem> DividedByDivUntilNine
         {
             get { return _dividedByDivUntilNineObservable; }
+        }
+
+        public int OtherNumber
+        {
+            get { return _number; }
+            set
+            {
+                _number = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int OtherOddNumber
+        {
+            get
+            {
+                return _oddNumber;
+            }
+            set
+            {
+                _oddNumber = value;
+                OnPropertyChanged();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

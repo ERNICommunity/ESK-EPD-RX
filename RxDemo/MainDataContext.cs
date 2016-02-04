@@ -3,9 +3,29 @@
     using System;
     using System.Collections.Immutable;
     using System.Reactive.Linq;
+    using System.Reactive.Subjects;
+    using System.Threading.Tasks;
 
     public class MainDataContext : MainDataContextBase
     {
+        private IConnectableObservable<int> _otherNumbersObs;
+
+        public MainDataContext()
+        {
+            _otherNumbersObs = Observable.Create<int>(async obs =>
+            {
+                var rnd = new Random();
+                while (true)
+                {
+                    await Task.Delay(500);
+                    obs.OnNext(rnd.Next(-100, 100));
+                }
+            }).Publish();
+            _otherNumbersObs.Connect();
+
+            Initialize();
+        }
+
         public override IObservable<int> OddNumbersObservable
         {
             get
@@ -77,6 +97,22 @@
             get
             {
                 return NumbersObservable.GroupByUntil(p => p / 10, p => p.Where(q => Math.Abs(q % 10) == 9));
+            }
+        }
+
+        public override IObservable<int> OtherNumbersObservable
+        {
+            get
+            {
+                return _otherNumbersObs;
+            }
+        }
+
+        public override IObservable<int> OtherOddNumbersObservable
+        {
+            get
+            {
+                return _otherNumbersObs.Where(p => p % 2 != 0);
             }
         }
     }
