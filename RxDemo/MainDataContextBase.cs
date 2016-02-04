@@ -27,6 +27,18 @@
 
         private ImmutableSortedDictionary<double, double> _graphPoints;
 
+        private int _otherNumber;
+
+        private int _otherOddNumber;
+
+        private int _sumOfNumberAndOther;
+
+        private int _computationForOtherNumberMerged;
+
+        private int _computationForOtherNumberSwitched;
+
+        private int _computationForOtherNumberConcatted;
+
         public IObservable<int> NumbersObservable { get; private set; }
 
         public abstract IObservable<int> OddNumbersObservable { get; }
@@ -41,26 +53,38 @@
 
         public abstract IObservable<IObservable<int>> DividedByDivUntilNineObservable { get; }
 
-        protected MainDataContextBase()
+        public abstract IObservable<int> OtherNumbersObservable { get; }
+
+        public abstract IObservable<int> OtherOddNumbersObservable { get; }
+
+        public abstract IObservable<int> SumOfNumberAndOtherObservable { get; }
+
+        public abstract IObservable<int> ComputationsForOtherNumbersMerged { get; }
+
+        public abstract IObservable<int> ComputationsForOtherNumbersSwitched { get; }
+
+        public abstract IObservable<int> ComputationsForOtherNumbersConcatted { get; }
+
+        protected void Initialize()
         {
             var connectable = Observable.Create<int>(
-                async (obs, cancellationToken) =>
-                {
-                    var rnd = new Random();
-                    int number = 0;
-                    while (true)
-                    {
-                        await Task.Delay(rnd.Next(300, 1000));
-                        number += rnd.Next(-10, 11);
-                        obs.OnNext(number);
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-                    }
+                            async (obs, cancellationToken) =>
+                            {
+                                var rnd = new Random();
+                                int number = 0;
+                                while (true)
+                                {
+                                    await Task.Delay(rnd.Next(300, 1000));
+                                    number += rnd.Next(-10, 11);
+                                    obs.OnNext(number);
+                                    if (cancellationToken.IsCancellationRequested)
+                                    {
+                                        break;
+                                    }
+                                }
 
-                    obs.OnCompleted();
-                }).Publish();
+                                obs.OnCompleted();
+                            }).Publish();
             NumbersObservable = connectable;
             NumbersObservable.Subscribe(p => Number = p, ex => MessageBox.Show(ex.Message));
             SubscribeToObservables();
@@ -87,6 +111,12 @@
                 p.Observable.Subscribe(q => { }, () => _dividedByDivUntilNineObservable.Remove(p));
                 _dividedByDivUntilNineObservable.Add(p);
             }, ex => MessageBox.Show(ex.Message));
+            OtherNumbersObservable.Subscribe(p => OtherNumber = p, ex => MessageBox.Show(ex.Message));
+            OtherOddNumbersObservable.Subscribe(p => OtherOddNumber = p, ex => MessageBox.Show(ex.Message));
+            SumOfNumberAndOtherObservable.Subscribe(p => SumOfNumberAndOther = p, ex => MessageBox.Show(ex.Message));
+            ComputationsForOtherNumbersMerged.Subscribe(p => ComputationForOtherNumberMerged = p, ex => MessageBox.Show(ex.Message));
+            ComputationsForOtherNumbersSwitched.Subscribe(p => ComputationForOtherNumberSwitched = p, ex => MessageBox.Show(ex.Message));
+            ComputationsForOtherNumbersConcatted.Subscribe(p => ComputationForOtherNumberConcatted = p, ex => MessageBox.Show(ex.Message));
         }
 
         public int Number
@@ -153,6 +183,81 @@
             get { return _dividedByDivUntilNineObservable; }
         }
 
+        public int OtherNumber
+        {
+            get { return _number; }
+            set
+            {
+                _number = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int OtherOddNumber
+        {
+            get
+            {
+                return _oddNumber;
+            }
+            set
+            {
+                _oddNumber = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int SumOfNumberAndOther
+        {
+            get
+            {
+                return _sumOfNumberAndOther;
+            }
+            set
+            {
+                _sumOfNumberAndOther = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ComputationForOtherNumberMerged
+        {
+            get
+            {
+                return _computationForOtherNumberMerged;
+            }
+            set
+            {
+                _computationForOtherNumberMerged = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ComputationForOtherNumberSwitched
+        {
+            get
+            {
+                return _computationForOtherNumberSwitched;
+            }
+            set
+            {
+                _computationForOtherNumberSwitched = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ComputationForOtherNumberConcatted
+        {
+            get
+            {
+                return _computationForOtherNumberConcatted;
+            }
+            set
+            {
+                _computationForOtherNumberConcatted = value;
+                OnPropertyChanged();
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -163,6 +268,14 @@
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        private Random _rnd = new Random();
+
+        protected async Task<int> Compute(int input)
+        {
+            await Task.Delay(_rnd.Next(500, 2000));
+            return input + 5;
         }
     }
 }

@@ -61,6 +61,30 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 10, 3">
+            <TextBlock Text="Other Number: " />
+            <TextBlock FontWeight="Bold" Text="{Binding OtherNumber}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 3, 10, 3">
+            <TextBlock Text="Other Odd Number: " />
+            <TextBlock FontWeight="Bold" Text="{Binding OtherOddNumber}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 3, 10, 3">
+            <TextBlock Text="Sum Of Number and Other Number: " />
+            <TextBlock FontWeight="Bold" Text="{Binding SumOfNumberAndOther}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 3, 10, 3">
+            <TextBlock Text="Computations of other numbers merged: " />
+            <TextBlock FontWeight="Bold" Text="{Binding ComputationForOtherNumberMerged}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 3, 10, 3">
+            <TextBlock Text="Computations of other numbers switched: " />
+            <TextBlock FontWeight="Bold" Text="{Binding ComputationForOtherNumberSwitched}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 3, 10, 3">
+            <TextBlock Text="Computations of other numbers concatted: " />
+            <TextBlock FontWeight="Bold" Text="{Binding ComputationForOtherNumberConcatted}" />
+        </StackPanel>
     </StackPanel>
 </Window>
 
