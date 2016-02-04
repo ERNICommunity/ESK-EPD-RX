@@ -4,6 +4,7 @@
     using System.Collections.Immutable;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
+    using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
 
     public class MainDataContext : MainDataContextBase
@@ -17,7 +18,7 @@
                 var rnd = new Random();
                 while (true)
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                     obs.OnNext(rnd.Next(-100, 100));
                 }
             }).Publish();
@@ -113,6 +114,38 @@
             get
             {
                 return _otherNumbersObs.Where(p => p % 2 != 0);
+            }
+        }
+
+        public override IObservable<int> SumOfNumberAndOtherObservable
+        {
+            get
+            {
+                return NumbersObservable.CombineLatest(_otherNumbersObs, (p, q) => p + q);
+            }
+        }
+
+        public override IObservable<int> ComputationsForOtherNumbersMerged
+        {
+            get
+            {
+                return OtherNumbersObservable.SelectMany(p => Compute(p));
+            }
+        }
+
+        public override IObservable<int> ComputationsForOtherNumbersSwitched
+        {
+            get
+            {
+                return OtherNumbersObservable.Select(p => Compute(p).ToObservable()).Switch();
+            }
+        }
+
+        public override IObservable<int> ComputationsForOtherNumbersConcatted
+        {
+            get
+            {
+                return OtherNumbersObservable.Select(p => Compute(p).ToObservable()).Concat();
             }
         }
     }

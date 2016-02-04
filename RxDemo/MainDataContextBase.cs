@@ -31,6 +31,14 @@
 
         private int _otherOddNumber;
 
+        private int _sumOfNumberAndOther;
+
+        private int _computationForOtherNumberMerged;
+
+        private int _computationForOtherNumberSwitched;
+
+        private int _computationForOtherNumberConcatted;
+
         public IObservable<int> NumbersObservable { get; private set; }
 
         public abstract IObservable<int> OddNumbersObservable { get; }
@@ -48,6 +56,14 @@
         public abstract IObservable<int> OtherNumbersObservable { get; }
 
         public abstract IObservable<int> OtherOddNumbersObservable { get; }
+
+        public abstract IObservable<int> SumOfNumberAndOtherObservable { get; }
+
+        public abstract IObservable<int> ComputationsForOtherNumbersMerged { get; }
+
+        public abstract IObservable<int> ComputationsForOtherNumbersSwitched { get; }
+
+        public abstract IObservable<int> ComputationsForOtherNumbersConcatted { get; }
 
         protected void Initialize()
         {
@@ -97,6 +113,10 @@
             }, ex => MessageBox.Show(ex.Message));
             OtherNumbersObservable.Subscribe(p => OtherNumber = p, ex => MessageBox.Show(ex.Message));
             OtherOddNumbersObservable.Subscribe(p => OtherOddNumber = p, ex => MessageBox.Show(ex.Message));
+            SumOfNumberAndOtherObservable.Subscribe(p => SumOfNumberAndOther = p, ex => MessageBox.Show(ex.Message));
+            ComputationsForOtherNumbersMerged.Subscribe(p => ComputationForOtherNumberMerged = p, ex => MessageBox.Show(ex.Message));
+            ComputationsForOtherNumbersSwitched.Subscribe(p => ComputationForOtherNumberSwitched = p, ex => MessageBox.Show(ex.Message));
+            ComputationsForOtherNumbersConcatted.Subscribe(p => ComputationForOtherNumberConcatted = p, ex => MessageBox.Show(ex.Message));
         }
 
         public int Number
@@ -186,6 +206,58 @@
             }
         }
 
+        public int SumOfNumberAndOther
+        {
+            get
+            {
+                return _sumOfNumberAndOther;
+            }
+            set
+            {
+                _sumOfNumberAndOther = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ComputationForOtherNumberMerged
+        {
+            get
+            {
+                return _computationForOtherNumberMerged;
+            }
+            set
+            {
+                _computationForOtherNumberMerged = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ComputationForOtherNumberSwitched
+        {
+            get
+            {
+                return _computationForOtherNumberSwitched;
+            }
+            set
+            {
+                _computationForOtherNumberSwitched = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ComputationForOtherNumberConcatted
+        {
+            get
+            {
+                return _computationForOtherNumberConcatted;
+            }
+            set
+            {
+                _computationForOtherNumberConcatted = value;
+                OnPropertyChanged();
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -196,6 +268,14 @@
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        private Random _rnd = new Random();
+
+        protected async Task<int> Compute(int input)
+        {
+            await Task.Delay(_rnd.Next(500, 2000));
+            return input + 5;
         }
     }
 }
