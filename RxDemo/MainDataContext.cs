@@ -1,6 +1,7 @@
 ﻿namespace RxDemo
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Reactive.Linq;
 
@@ -10,7 +11,7 @@
         {
             get
             {
-                return NumbersObservable.Where(p => p % 2 != 0);
+                return Observable.Return(0);
             }
         }
 
@@ -18,33 +19,7 @@
         {
             get
             {
-                return NumbersObservable.Select(
-                    p =>
-                    {
-                        if (p == 0)
-                        {
-                            return "Nothing";
-                        }
-
-                        string prefix = "";
-                        string suffix = "th";
-                        if (p < 0)
-                        {
-                            prefix = "Negative ";
-                        }
-
-                        if (Math.Abs(p) % 10 == 1 && Math.Abs(p) / 10 != 1)
-                        {
-                            suffix = "st";
-                        }
-
-                        if (Math.Abs(p) % 10 == 2 && Math.Abs(p) / 10 != 1)
-                        {
-                            suffix = "nd";
-                        }
-
-                        return prefix + Math.Abs(p) + suffix;
-                    });
+                return Observable.Return("");
             }
         }
 
@@ -52,7 +27,7 @@
         {
             get
             {
-                return NumbersObservable.Scan(ImmutableSortedDictionary<double, double>.Empty, (doubles, i) => doubles.SetItem(DateTime.Now.Ticks - new DateTime(2015, 1, 1).Ticks, i));
+                return Observable.Return(new Dictionary<double, double> { { 0, 0 }, { 1, 1 } }.ToImmutableSortedDictionary());
             }
         }
 
@@ -60,7 +35,7 @@
         {
             get
             {
-                return NumbersObservable.GroupBy(p => Math.Abs(p % 10));
+                return Observable.Return(Observable.Return(0));
             }
         }
 
@@ -68,7 +43,7 @@
         {
             get
             {
-                return NumbersObservable.GroupBy(p => Math.Abs(p % 10)).Select(p => p.Take(5));
+                return Observable.Return(Observable.Return(0));
             }
         }
 
@@ -76,7 +51,7 @@
         {
             get
             {
-                return NumbersObservable.GroupByUntil(p => p / 10, p => p.Where(q => Math.Abs(q % 10) == 9));
+                return Observable.Return(Observable.Return(0));
             }
         }
     }
